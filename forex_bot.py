@@ -1,4 +1,6 @@
 import logging
+from datetime import datetime
+import pytz
 from telegram import Update
 from telegram.ext import Updater, MessageHandler, Filters, CallbackContext
 
@@ -18,7 +20,16 @@ BEARISH_REPLY = (
     "Place a Sell Stop at the Fractal Low, and set your Stop Loss at the candle's high."
 )
 
+def is_weekend():
+    tz = pytz.timezone("Asia/Karachi")
+    now = datetime.now(tz)
+    # 5 = Saturday, 6 = Sunday
+    return now.weekday() in [5, 6]
+
 def handle_message(update: Update, context: CallbackContext):
+    if is_weekend():
+        return  # Weekend pe kuch nahi karega
+    
     msg = update.message
     if not msg or not msg.text:
         return
